@@ -1,6 +1,5 @@
 "use client"
 import * as React from "react";
-import LightRays from "@/components/LightRays";
 import NavBar from "@/components/ui/navbar";
 import Orb from "@/components/Orb";
 
@@ -18,7 +17,7 @@ export default function Home() {
 
       <h1 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-7xl font-black text-center">SEOKMIN.DEV</h1>
 
-      
+
     </div>
   );
 }
