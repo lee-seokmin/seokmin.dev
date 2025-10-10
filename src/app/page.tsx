@@ -1,28 +1,24 @@
 "use client"
 import * as React from "react";
-import { useTheme } from "next-themes";
 import LightRays from "@/components/LightRays";
 import NavBar from "@/components/ui/navbar";
+import Orb from "@/components/Orb";
 
 export default function Home() {
-  const { setTheme } = useTheme();
-
   return (
     <div className="bg-background" style={{ width: '100%', height: '100vh', position: 'relative' }}>
-      <LightRays
-        raysOrigin="top-center"
-        raysColor="#ffffff"
-        raysSpeed={1.5}
-        lightSpread={0.8}
-        rayLength={1.2}
-        followMouse={true}
-        mouseInfluence={0.1}
-        noiseAmount={0.1}
-        distortion={0.05}
-        className="custom-rays"
+      <Orb
+        hoverIntensity={1.2}
+        rotateOnHover={true}
+        hue={0}
+        forceHoverState={false}
       />
 
       <NavBar />
+
+      <h1 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-7xl font-black text-center">SEOKMIN.DEV</h1>
+
+      
     </div>
   );
 }

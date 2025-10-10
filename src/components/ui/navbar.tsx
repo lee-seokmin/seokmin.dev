@@ -19,7 +19,7 @@ export default function NavBar() {
             <Link
               key={idx}
               href={href}
-              className={`relative px-2 py-1 transition-all duration-300 rounded-xl hover:bg-foreground/10 hover:px-2.5 hover:py-1.5 md:hover:px-3 md:hover:py-1 ${isActive ? "text-primary" : "text-foreground hover:text-primary"
+              className={`relative px-2 py-1 transition-all duration-300 rounded-xl hover:bg-foreground/10 hover:px-2.5 hover:py-1.5 md:hover:px-3 md:hover:py-1 ${isActive ? "text-chart-2" : "text-foreground hover:text-chart-2"
                 }`}
             >
               <span className="text-sm font-bold">
@@ -32,7 +32,7 @@ export default function NavBar() {
           variant="outline"
           size="icon"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="rounded-xl"
+          className="rounded-xl cursor-pointer"
         >
           <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
           <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
