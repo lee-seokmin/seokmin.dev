@@ -1,7 +1,7 @@
 import { getAllPosts, getAllCategories } from '@/lib/posts';
 import PostCard from '@/components/blog/PostCard';
-import { CategoryFilterClientWrapper } from '@/components/blog/CategoryFilterClientWrapper';
-import { SortClientWrapper } from '@/components/blog/SortClientWrapper';
+import { CategoryFilterClientWrapper } from '@/components/blog/wrapper/CategoryFilterClientWrapper';
+import { SortClientWrapper } from '@/components/blog/wrapper/SortClientWrapper';
 
 interface BlogPageProps {
   searchParams: Promise<{ category?: string; sort?: string }>;
