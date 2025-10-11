@@ -1,7 +1,8 @@
-import { getPostBySlug } from '@/lib/posts';
+import { getPostBySlug, getAllPosts } from '@/lib/posts';
 import { notFound } from 'next/navigation';
 import MDXContent from '@/components/blog/MDXContent';
 import { Badge } from '@/components/ui/badge';
+import RelatedPosts from '@/components/blog/RelatedPosts';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -40,6 +41,26 @@ export default async function PostPage({ params }: PageProps) {
     notFound();
   }
 
+  // Fetch all posts to find related ones
+  const allPosts = await getAllPosts();
+
+  // Find related posts based on shared tags and category
+  const relatedPosts = allPosts
+    .filter((p) => p.slug !== slug) // Exclude current post
+    .map((p) => {
+      // Calculate relevance score based on shared tags and category
+      let score = 0;
+      const sharedTags = p.tags.filter(tag => post.tags.includes(tag));
+      if (sharedTags.length > 0) score += sharedTags.length * 2; // Tags are worth more
+      if (p.category === post.category) score += 1; // Category match is worth less
+
+      return { post: p, score };
+    })
+    .filter(item => item.score > 0) // Only include posts with some relevance
+    .sort((a, b) => b.score - a.score) // Sort by relevance score
+    .slice(0, 4) // Take top 4
+    .map(item => item.post); // Extract the post objects
+
   const formattedDate = new Date(post.create_at).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
@@ -48,7 +69,7 @@ export default async function PostPage({ params }: PageProps) {
 
   return (
     <article className="py-24">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto px-4">
         {/* Header */}
         <header className="mb-12">
           <div className="flex items-center gap-2 mb-4">
@@ -73,9 +94,7 @@ export default async function PostPage({ params }: PageProps) {
         </header>
 
         {/* Content */}
-        <div className="prose prose-lg max-w-none">
-          <MDXContent mdxSource={post.mdxSource} />
-        </div>
+        <MDXContent mdxSource={post.mdxSource} />
 
         {/* Tags */}
         {post.tags && (
@@ -92,6 +111,11 @@ export default async function PostPage({ params }: PageProps) {
               ))}
             </div>
           </div>
+        )}
+
+        {/* Related Posts */}
+        {relatedPosts.length > 0 && (
+          <RelatedPosts posts={relatedPosts} />
         )}
       </div>
     </article>

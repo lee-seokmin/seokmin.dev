@@ -16,13 +16,18 @@ export async function getAllCategories(): Promise<string[]> {
   });
 }
 
-export async function getPostBySlug(slug: string): Promise<(Post & { mdxSource: any }) | null> {
+export async function getPostBySlug(slug: string) {
   const allPosts = await getAllPosts();
   const post = allPosts.find((post) => post.slug === slug);
-
+  
   if (!post) return null;
 
-  const mdxSource = await serializeMDX(post.content);
+  // Serialize the MDX content
+  const mdxSource = await serialize(post.content, {
+    mdxOptions: {
+      development: process.env.NODE_ENV === 'development',
+    },
+  });
 
   return {
     ...post,
@@ -69,7 +74,7 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
           thumbnail: thumbnail,
           create_at: data.createAt || data.create_at || new Date().toISOString(),
           category: category,
-          tags: data.tags || '',
+          tags: Array.isArray(data.tags) ? data.tags : (data.tags ? data.tags.split(',').map((tag: string) => tag.trim()) : []),
           slug: data.slug || postDir,
           content: content,
           best: data.best || false,
@@ -98,7 +103,7 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
 export async function serializeMDX(content: string) {
   try {
     const mdxSource = await serialize(content, {
-      parseFrontmatter: false,
+      parseFrontmatter: true,
     });
     return mdxSource;
   } catch (error) {

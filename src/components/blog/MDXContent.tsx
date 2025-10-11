@@ -1,10 +1,10 @@
 'use client';
 
-import { MDXRemote } from 'next-mdx-remote';
+import { MDXRemote, type MDXRemoteSerializeResult } from 'next-mdx-remote';
 import MDXComponents from '@/components/blog/MDXComponents';
 
 interface MDXContentProps {
-  mdxSource: any;
+  mdxSource: MDXRemoteSerializeResult;
 }
 
 export default function MDXContent({ mdxSource }: MDXContentProps) {
@@ -14,7 +14,10 @@ export default function MDXContent({ mdxSource }: MDXContentProps) {
 
   return (
     <div className="prose prose-lg max-w-none">
-      <MDXRemote {...mdxSource} components={MDXComponents} />
+      <MDXRemote
+        {...mdxSource}
+        components={MDXComponents}
+      />
     </div>
   );
 }
