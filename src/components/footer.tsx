@@ -54,7 +54,7 @@ export default function Footer() {
       {/* Bottom Section */}
       <div className="py-4 text-center">
         <p className="text-muted-foreground text-sm">
-          © {new Date().getFullYear()} Lee Soekmin. All rights reserved.
+          © {new Date().getFullYear()} 이석민 All rights reserved.
         </p>
       </div>
     </footer>
