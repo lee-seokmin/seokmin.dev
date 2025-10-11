@@ -1,23 +1,18 @@
-"use client"
-import * as React from "react";
 import NavBar from "@/components/navbar";
 import Orb from "@/components/Orb";
 import Footer from "@/components/footer";
+import PostList from "@/components/blog/PostList";
+import { getAllPosts } from "@/lib/posts";
 
-const posts = [
-  {
-    "title": "Post 1",
-    "date": "2025-10-11",
-    "slug": "post-1"
-  },
-  {
-    "title": "Post 2",
-    "date": "2025-10-12",
-    "slug": "post-2"
-  }
-]
+// 게시물 4개만 가져오기 위해 비동기로 처리
+async function getRecentPosts() {
+  const allPosts = await getAllPosts();
+  return allPosts.slice(0, 4);
+}
 
-export default function Home() {
+export default async function Home() {
+  const posts = await getRecentPosts();
+
   return (
     <div className="bg-background space-y-24 px-6" style={{ width: '100%', height: '100vh', position: 'relative' }}>
       <Orb
@@ -34,14 +29,9 @@ export default function Home() {
       <div className="max-w-6xl mx-auto space-y-2">
         <h2 className="text-2xl font-bold">Recent Posts</h2>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-4">
           {posts.map((post) => (
-            <div key={post.slug} className="bg-transparent hover:bg-card border border-border rounded-lg overflow-hidden shadow-lg transition-all duration-200 cursor-pointer">
-              <div className="p-4">
-                <h3 className="text-lg text-foreground font-semibold">{post.title}</h3>
-                <p className="text-sm text-muted-foreground">{post.date}</p>
-              </div>
-            </div>
+            <PostList key={post.slug} post={post} />
           ))}
         </div>
       </div>
