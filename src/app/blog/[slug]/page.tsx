@@ -1,6 +1,7 @@
 import { getPostBySlug } from '@/lib/posts';
 import { notFound } from 'next/navigation';
 import MDXContent from '@/components/blog/MDXContent';
+import { Badge } from '@/components/ui/badge';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -51,13 +52,9 @@ export default async function PostPage({ params }: PageProps) {
         {/* Header */}
         <header className="mb-12">
           <div className="flex items-center gap-2 mb-4">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20">
-              {post.category}
-            </span>
+            <Badge variant="outline">{post.category}</Badge>
             {post.best && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
-                ⭐ 추천 포스트
-              </span>
+              <Badge variant="destructive">⭐ 추천</Badge>
             )}
           </div>
 
@@ -86,12 +83,12 @@ export default async function PostPage({ params }: PageProps) {
             <h3 className="text-lg font-semibold text-foreground mb-4">태그</h3>
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag: string, index: number) => (
-                <span
+                <Badge
                   key={index}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-secondary text-secondary-foreground"
+                  variant="chart-2"
                 >
                   #{tag.trim()}
-                </span>
+                </Badge>
               ))}
             </div>
           </div>
