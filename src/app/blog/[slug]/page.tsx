@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import MDXContent from '@/components/blog/MDXContent';
 import { Badge } from '@/components/ui/badge';
 import RelatedPosts from '@/components/blog/RelatedPosts';
+import Comment from '@/components/blog/Comment';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -19,6 +20,7 @@ export async function generateMetadata({ params }: PageProps) {
   }
 
   return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_URL || 'https://seokmin.dev'),
     title: post.title,
     description: post.description,
     openGraph: {
@@ -26,9 +28,19 @@ export async function generateMetadata({ params }: PageProps) {
       description: post.description,
       images: [
         {
-          url: `/api/og?title=${post.title}&description=${post.description}`,
+          url: `/api/og?title=${encodeURIComponent(post.title)}&description=${encodeURIComponent(post.description || '')}`,
+          width: 1200,
+          height: 630,
+          alt: post.title,
         },
       ],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.description,
+      images: [`/api/og?title=${encodeURIComponent(post.title)}&description=${encodeURIComponent(post.description || '')}`],
     },
   };
 }
@@ -117,6 +129,9 @@ export default async function PostPage({ params }: PageProps) {
         {relatedPosts.length > 0 && (
           <RelatedPosts posts={relatedPosts} />
         )}
+
+        {/* Comment */}
+        <Comment className="mt-12" />
       </div>
     </article>
   );
