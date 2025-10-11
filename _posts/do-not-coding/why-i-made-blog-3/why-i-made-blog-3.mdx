@@ -1,0 +1,165 @@
+---
+slug: "why-i-made-blog-3"
+title: "코딩하지 마세요: 블로그를 만들면서 겪은 시행착오"
+description: "이게 왜 되지?"
+thumbnail: "./cover.jpg"
+createAt: "2025-03-09"
+tags: "코딩하지 마세요"
+best: true
+---
+
+<div className="flex flex-col gap-10">
+  > 이 블로그는 Next.js 15 버전을 기준으로 만들어졌습니다. [소스코드](https://github.com/lee-seokmin/blog)
+
+  <div>
+    # 아이러니 (Irony)
+    > 아이러니한 상황은 **모순되거나 역설적인 상황**을 의미합니다. 
+
+    개발을 하다보면 "이게 왜 되지?"라거나 "이게 왜 안되지?"라는 상황을 많이 마주하게 됩니다.
+    분명히 전에는 됐었는데 이번에 실행할 때는 안된다거나 "에이~ 되겠어?"하고 실행한 코드는 또 될 때가 많습니다.
+    이번에는 제가 이 블로그를 만들면서 겪은 시행착오에 대해 얘기해볼까 합니다.
+  </div>
+
+  <div>
+    # 폴더 구조
+    이 블로그는 `Next Js`를 이용해 만들어졌습니다.
+    블로그의 기본 기능 중 하나가 이미지 업로드인데 `Next Js`는 이미지를 `public`폴더에 저장해야 합니다.
+  </div>
+
+  <div>
+    ## 처음에는...
+
+    저는 블로그의 글이 될 `.mdx`파일과 이미지 파일들을 같은 폴더에 두고 싶었습니다.
+    그래서 `public`폴더 안에 `contents`폴더를 만들어 `.mdx`파일과 이미지 파일들을 같이 보관했습니다.
+
+    ```bash
+      ├── public
+      │   ├── contents
+      │   │   └── [category]
+      │   │       └── [subcategory]
+      │   │           ├── *.mdx
+      │   │           └── *.jpg
+      │   ├── image
+      │   │   └── profile.jpg
+      │   ├── logo
+      │   │   └── favicon.ico
+      |   └── ...
+      ├── src
+      │   └── ...
+      └── ...
+    ```
+
+    로컬에서 **dev**모드로 실행했을 때는 아무 문제가 없었습니다.
+    하지만 `Vercel`에 배포했을 때 `.mdx`파일이 `public`폴더 안에 있다보니 ts파일이 `.mdx`파일을 읽어오지 못하는 오류가 생겼습니다.
+  </div>
+
+  <div>
+    ## 머리를 싸매며
+    > 이 오류를 고치는 데만 3일 정도 걸렸습니다...
+
+    할 수 있는 건 다 해본 것 같습니다. `ts`파일에서 `.mdx`파일을 찾을 때 로그를 찍어서 파일이 어디에 저장되어 있는지 찾아보려고 했습니다.
+    하지만 `.mdx`파일이 어디에 저장되어 있는지 도무지 찾을 수가 없었습니다.
+    `/var/task`에도 없고 `/tmp`에도 없고 `/`에도 없고...
+    계속 이런 오류들만 나타났습니다.
+
+    ![로그](/_posts/do-not-coding/why-i-made-blog-3/folder_logging.jpg)
+  </div>
+
+  <div>
+    ## 해결
+    > 그래서 폴더 구조를 바꾸었습니다.
+
+    `.mdx`파일과 이미지 파일들을 분리했습니다. 이미지 파일들은 계속 `public`폴더에 남고, `.mdx`파일은 루트 디렉토리에 따로 폴더를 새로 만들어 저장하였습니다.
+
+    ```bash
+      ├── _posts
+      │   │   └── [category]
+      │   │       └── [subcategory]
+      │   │           └── *.mdx
+      ├── public
+      │   ├── _posts
+      │   │   └── [category]
+      │   │       └── [subcategory]
+      │   │           └── *.jpg
+      │   ├── image
+      │   │   └── profile.jpg
+      │   ├── logo
+      │   │   └── favicon.ico
+      |   └── ...
+      ├── src
+      │   └── ...
+      └── ...
+    ```
+    이렇게 바꾸니 `ts`파일에서도 정상적으로 찾을 수 있었습니다.
+  </div>
+
+  <div>
+    # API
+    폴더 구조를 바꾸고나니 메인 화면에서는 포스트가 잘 가져와졌지만 상세 페이지로 넘어 갈 수가 없었습니다.
+  </div>
+
+  <div>
+    ## 문제 상황
+    폴더 구조를 바꾸고 나니 원래 데이터를 가져오는 방식으로는 데이터를 가져올 수가 없었습니다.
+    그래서 **API**를 이용하여 데이터를 가져와야겠다고 생각했습니다.
+    하지만 **API**를 구성하고 실행해본 결과, 메인 화면에서는 포스트가 잘 가져와졌지만 이후 상세 페이지로 넘어 갈 수가 없었습니다.
+    `dynamic route`를 사용하여 포스트의 상세 페이지로 이동하는데 상세 페이지에서 `api`호출이 정상적으로 되지 않았습니다.
+
+    ![로그](/_posts/do-not-coding/why-i-made-blog-3/api_logging.jpg)
+  </div>
+
+  <div>
+    ## 해결
+
+    API의 URL을 상대 경로가 아닌 절대 경로를 사용했습니다.
+    예를 들어 **/api/files**가 아닌 **http://localhost:3000/api/files**로 바꾸었습니다.
+    ![URL](/_posts/do-not-coding/why-i-made-blog-3/api_url.jpg)
+    위의 URL로 데이터를 fetch하여 상세 페이지를 볼 수 있게 하였습니다.
+  </div>
+
+  <div>
+    # 최종 폴더 구조
+    
+    ```bash
+      ├── _posts
+      │   │   └── [category]
+      │   │       └── [subcategory]
+      │   │           └── *.mdx
+      ├── public
+      │   ├── _posts
+      │   │   └── [category]
+      │   │       └── [subcategory]
+      │   │           └── *.jpg
+      │   ├── image
+      │   │   └── profile.jpg
+      │   ├── logo
+      │   │   └── favicon.ico
+      |   └── ...
+      ├── src
+      │   ├── app
+      │   │   ├── api
+      │   │   │   └── files
+      │   │   │       └── route.ts 
+      │   │   ├── posts
+      │   │   │   └── [slug]
+      │   │   │       └── page.tsx
+      │   │   ├── page.tsx
+      │   │   └── ...
+      │   ├── components
+      │   │   └── *.py
+      │   ├── context
+      │   │   └── ThemeContext.tsx
+      │   ├── types
+      │   │   └── MdxContent.ts
+      │   └── mdx-components.tsx
+      └── ...
+    ```
+  </div>
+
+  <div>
+    # 마치며
+    이번 경험은 단순히 개발 기술의 문제가 아니라, 프로젝트의 구조 설계 및 배포 환경 간의 차이로 인해 발생하는 여러 문제에 대해 다시 한 번 생각해볼 수 있는 계기가 되었습니다.
+    오류를 해결하는 과정에서 AI의 도움을 받으며 개발 속도와 문제 해결 역량이 눈에 띄게 향상되었음을 느꼈습니다.  
+    > 결론: AI 짱!
+  </div>
+</div>
