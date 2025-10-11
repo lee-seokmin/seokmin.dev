@@ -15,14 +15,13 @@ export default function NavBar() {
       <ul className="flex justify-center items-center gap-2 md:gap-4 hover:gap-6 transition-all duration-300">
         {["Home", "Blog", "Craft"].map((item, idx) => {
           const lowerCaseItem = item.toLowerCase();
-          const isActive = item === "Home" ? pathname === "/" : pathname === `/${lowerCaseItem}`;
           const href = item === "Home" ? "/" : `/${lowerCaseItem}`;
+          const isActive = item === "Home" ? pathname === "/" : pathname.startsWith(`/${lowerCaseItem}`);
           return (
             <Link
               key={idx}
               href={href}
-              className={`relative px-2 py-1 transition-all duration-300 rounded-xl hover:bg-foreground/10 hover:px-2.5 hover:py-1.5 md:hover:px-3 md:hover:py-1 ${isActive ? "text-chart-2" : "text-foreground hover:text-chart-2"
-                }`}
+              className={`relative px-2 py-1 transition-all duration-300 rounded-xl hover:bg-foreground/10 hover:px-2.5 hover:py-1.5 md:hover:px-3 md:hover:py-1 ${isActive ? "text-chart-2" : "text-foreground hover:text-chart-2"}`}
             >
               <span className="text-sm font-bold">
                 {item}
