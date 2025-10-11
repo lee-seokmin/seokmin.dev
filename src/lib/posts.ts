@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { serialize } from 'next-mdx-remote/serialize';
 import { Post } from '@/types/Post';
 
 const postsDirectory = path.join(process.cwd(), '_posts');
@@ -15,14 +16,18 @@ export async function getAllCategories(): Promise<string[]> {
   });
 }
 
-export async function getPostsByCategory(category: string, sortBy?: string): Promise<Post[]> {
-  const allPosts = await getAllPosts(sortBy);
-  return allPosts.filter((post) => post.category === category);
-}
-
-export async function getPostBySlug(slug: string): Promise<Post | null> {
+export async function getPostBySlug(slug: string): Promise<(Post & { mdxSource: any }) | null> {
   const allPosts = await getAllPosts();
-  return allPosts.find((post) => post.slug === slug) || null;
+  const post = allPosts.find((post) => post.slug === slug);
+
+  if (!post) return null;
+
+  const mdxSource = await serializeMDX(post.content);
+
+  return {
+    ...post,
+    mdxSource,
+  };
 }
 
 export async function getAllPosts(sortBy?: string): Promise<Post[]> {
@@ -87,5 +92,17 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
     default:
       // Default to newest
       return allPosts.sort((a, b) => new Date(b.create_at).getTime() - new Date(a.create_at).getTime());
+  }
+}
+
+export async function serializeMDX(content: string) {
+  try {
+    const mdxSource = await serialize(content, {
+      parseFrontmatter: false,
+    });
+    return mdxSource;
+  } catch (error) {
+    console.error('Error serializing MDX:', error);
+    return null;
   }
 }
