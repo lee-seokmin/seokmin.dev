@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronUp, Funnel } from "lucide-react"
+import { Check, ArrowUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -18,27 +18,27 @@ import {
 } from "@/components/ui/popover"
 
 interface FilterProps {
-  categories: string[];
-  selectedCategory: string;
-  onCategoryChange: (category: string) => void;
+  selectedSortOption: string;
+  onSortOptionChange: (sortOption: string) => void;
 }
 
-export function CategoryFilter({ categories, selectedCategory, onCategoryChange }: FilterProps) {
+const sortOptions: { value: string; label: string }[] = [
+  { value: "", label: "최신순" },
+  { value: "shortest", label: "짧은순" },
+  { value: "longest", label: "긴순" },
+]
+
+export function Sort({ selectedSortOption, onSortOptionChange }: FilterProps) {
   const [open, setOpen] = React.useState(false)
 
-  const categoryOptions = [
-    { value: "", label: "ALL" },
-    ...categories.map(category => ({ value: category, label: category }))
-  ]
-
-  const longestCategory = categoryOptions.reduce((longest, option) => {
+  const longestSortOption = sortOptions.reduce((longest, option) => {
     if (option.label.length > longest.length) {
       return option.label
     }
     return longest
   }, "")
 
-  const triggerWidth = longestCategory.length * 14;
+  const triggerWidth = longestSortOption.length * 30;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -50,22 +50,21 @@ export function CategoryFilter({ categories, selectedCategory, onCategoryChange 
           className="justify-between"
           style={{ width: `${triggerWidth}px` }}
         >
-          <Funnel className="opacity-50" />
-          {categoryOptions.find((option) => option.value === selectedCategory)?.label}
-          <ChevronUp className={cn("opacity-50 transition-all duration-200 ease-in-out", open ? "rotate-0" : "rotate-180")} />
+          <ArrowUpDown className="opacity-50" />
+          {sortOptions.find((option) => option.value === selectedSortOption)?.label}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0" style={{ width: `${triggerWidth}px` }}>
         <Command>
           <CommandList>
             <CommandGroup>
-              {categoryOptions.map((option) => (
+              {sortOptions.map((option) => (
                 <CommandItem
                   key={option.value}
                   value={option.value}
                   className="hover:bg-accent hover:text-accent-foreground cursor-pointer"
                   onSelect={(currentValue) => {
-                    onCategoryChange(currentValue === selectedCategory ? "" : currentValue)
+                    onSortOptionChange(currentValue === selectedSortOption ? "" : currentValue)
                     setOpen(false)
                   }}
                 >
@@ -73,7 +72,7 @@ export function CategoryFilter({ categories, selectedCategory, onCategoryChange 
                   <Check
                     className={cn(
                       "ml-auto",
-                      selectedCategory === option.value ? "opacity-100" : "opacity-0"
+                      selectedSortOption === option.value ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </CommandItem>
