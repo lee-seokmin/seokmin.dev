@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
+import TableOfContents from "@/components/blog/TableOfContents";
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -13,6 +14,9 @@ export default function NavBar() {
   return (
     <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-background/90 backdrop-blur-lg rounded-full px-3 py-2 z-50 shadow-lg shadow-black/[0.03] border border-border hover:px-6 hover:py-3 transition-all duration-300">
       <ul className="flex justify-center items-center gap-2 md:gap-4 hover:gap-6 transition-all duration-300">
+        {pathname.startsWith("/blog/") && (
+          <TableOfContents />
+        )}
         {["Home", "Blog", "Craft"].map((item, idx) => {
           const lowerCaseItem = item.toLowerCase();
           const href = item === "Home" ? "/" : `/${lowerCaseItem}`;
@@ -33,7 +37,7 @@ export default function NavBar() {
           variant="outline"
           size="icon"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="rounded-xl cursor-pointer"
+          className="rounded-full cursor-pointer"
         >
           <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
           <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />

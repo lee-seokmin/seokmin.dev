@@ -1,39 +1,94 @@
-'use client';
-
 import Image from 'next/image';
 
+function createSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^가-힣a-z0-9 ]/g, '') // 한글과 영문, 숫자, 공백만 남김
+    .replace(/ /g, '-')
+    .replace(/--+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 const MDXComponents = {
-  // Headers
-  h1: ({ children, ...props }: any) => (
-    <h1 className="text-3xl font-bold text-foreground mb-4 mt-8 first:mt-0" {...props}>
-      {children}
-    </h1>
-  ),
-  h2: ({ children, ...props }: any) => (
-    <h2 className="text-2xl font-semibold text-foreground mb-3 mt-6" {...props}>
-      {children}
-    </h2>
-  ),
-  h3: ({ children, ...props }: any) => (
-    <h3 className="text-xl font-semibold text-foreground mb-2 mt-4" {...props}>
-      {children}
-    </h3>
-  ),
-  h4: ({ children, ...props }: any) => (
-    <h4 className="text-lg font-semibold text-foreground mb-2 mt-3" {...props}>
-      {children}
-    </h4>
-  ),
-  h5: ({ children, ...props }: any) => (
-    <h5 className="text-base font-semibold text-foreground mb-1 mt-2" {...props}>
-      {children}
-    </h5>
-  ),
-  h6: ({ children, ...props }: any) => (
-    <h6 className="text-sm font-semibold text-foreground mb-1 mt-2" {...props}>
-      {children}
-    </h6>
-  ),
+  // Headers with auto-generated IDs
+  h1: ({ children, id, ...props }: any) => {
+    const text = typeof children === 'string' ? children : '';
+    const slug = id || createSlug(text);
+    return (
+      <h1
+        id={slug}
+        className="text-3xl font-bold text-foreground mb-4 mt-8 first:mt-0 scroll-mt-20"
+        {...props}
+      >
+        {children}
+      </h1>
+    );
+  },
+  h2: ({ children, id, ...props }: any) => {
+    const text = typeof children === 'string' ? children : '';
+    const slug = id || createSlug(text);
+    return (
+      <h2
+        id={slug}
+        className="text-2xl font-semibold text-foreground mb-3 mt-6 scroll-mt-20"
+        {...props}
+      >
+        {children}
+      </h2>
+    );
+  },
+  h3: ({ children, id, ...props }: any) => {
+    const text = typeof children === 'string' ? children : '';
+    const slug = id || createSlug(text);
+    return (
+      <h3
+        id={slug}
+        className="text-xl font-semibold text-foreground mb-2 mt-4 scroll-mt-20"
+        {...props}
+      >
+        {children}
+      </h3>
+    );
+  },
+  h4: ({ children, id, ...props }: any) => {
+    const text = typeof children === 'string' ? children : '';
+    const slug = id || createSlug(text);
+    return (
+      <h4
+        id={slug}
+        className="text-lg font-semibold text-foreground mb-2 mt-3 scroll-mt-20"
+        {...props}
+      >
+        {children}
+      </h4>
+    );
+  },
+  h5: ({ children, id, ...props }: any) => {
+    const text = typeof children === 'string' ? children : '';
+    const slug = id || createSlug(text);
+    return (
+      <h5
+        id={slug}
+        className="text-base font-semibold text-foreground mb-1 mt-2 scroll-mt-20"
+        {...props}
+      >
+        {children}
+      </h5>
+    );
+  },
+  h6: ({ children, id, ...props }: any) => {
+    const text = typeof children === 'string' ? children : '';
+    const slug = id || createSlug(text);
+    return (
+      <h6
+        id={slug}
+        className="text-sm font-semibold text-foreground mb-1 mt-2 scroll-mt-20"
+        {...props}
+      >
+        {children}
+      </h6>
+    );
+  },
 
   // Paragraphs
   p: ({ children, ...props }: any) => (
