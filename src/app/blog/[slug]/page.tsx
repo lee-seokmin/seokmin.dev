@@ -4,6 +4,7 @@ import MDXContent from '@/components/blog/MDXContent';
 import { Badge } from '@/components/ui/badge';
 import RelatedPosts from '@/components/blog/RelatedPosts';
 import Comment from '@/components/blog/Comment';
+import { Calendar, Clock } from 'lucide-react';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -100,8 +101,14 @@ export default async function PostPage({ params }: PageProps) {
           </p>
 
           <div className="flex items-center justify-between text-sm text-muted-foreground border-b border-border pb-6">
-            <span>{formattedDate}</span>
-            <span>{Math.ceil(post.content.length / 500)}분 읽기</span>
+            <div className="flex items-center gap-2">
+              <Calendar size={16} />
+              <span>{formattedDate}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock size={16} />
+              <span>{Math.ceil(post.content.length / 500)}분 읽기</span>
+            </div>
           </div>
         </header>
 

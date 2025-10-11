@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
+import { Calendar, Clock } from "lucide-react";
 
 interface PostCardProps {
   post: Post;
@@ -71,8 +72,14 @@ export default function PostCard({ post }: PostCardProps) {
 
           {/* Date */}
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{formattedDate}</span>
-            <span>{Math.ceil(post.content.length / 500)}분 읽기</span>
+            <div className="flex items-center gap-2">
+              <Calendar size={16} />
+              <span>{formattedDate}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Clock size={16} />
+              <span>{Math.ceil(post.content.length / 500)}분 읽기</span>
+            </div>
           </div>
         </div>
       </div>
