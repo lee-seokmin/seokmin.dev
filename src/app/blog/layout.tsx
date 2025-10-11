@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import NavBar from "@/components/navbar";
 import Footer from "@/components/footer";
 
 export default function BlogLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <div className="px-6">
