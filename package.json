@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "prebuild": "mkdir -p public/_posts && cp -r _posts/* public/_posts/",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "biome check",

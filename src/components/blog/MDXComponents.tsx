@@ -134,12 +134,15 @@ const MDXComponents = {
     if (!src) return null;
 
     // Handle relative paths for images in _posts directory
-    const isRelativePath = src.startsWith('/');
-    const imageSrc = isRelativePath ? src : `/_posts/${src}`;
+    const isRelativePath = !src.startsWith('http') && !src.startsWith('/');
+    if (isRelativePath) {
+      // For relative paths, assume they are in _posts and map to public/_posts
+      src = `/_posts/${src}`;
+    }
 
     return (
       <Image
-        src={imageSrc}
+        src={src}
         alt={alt || 'Blog image'}
         width={800}
         height={400}

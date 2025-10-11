@@ -65,7 +65,13 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
         // Convert relative thumbnail path to absolute path
         let thumbnail = data.thumbnail || '';
         if (thumbnail && thumbnail.startsWith('./')) {
-          thumbnail = `/_posts/${category}/${postDir}/${thumbnail.substring(2)}`;
+          const possibleThumbnailPath = path.join(postPath, thumbnail.substring(2));
+          // Check if the file exists in _posts
+          if (fs.existsSync(possibleThumbnailPath)) {
+            thumbnail = `/_posts/${category}/${postDir}/${thumbnail.substring(2)}`;
+          } else {
+            thumbnail = ''; // Or set a default if needed
+          }
         }
 
         const post: Post = {
