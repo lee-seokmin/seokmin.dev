@@ -1,0 +1,90 @@
+[
+    {
+        "id": 1,
+        "name": "PhotoFrame",
+        "category": "Website",
+        "img": "./img/photoframe.png",
+        "url": "https://github.com/lee-seokmin/PhotoFrame",
+        "state": "View More"
+    },
+    {
+        "id": 2,
+        "name": "DownBit",
+        "category":"Website",
+        "img": "./img/downbit.png",
+        "url": "https://github.com/lee-seokmin/DownBit",
+        "state": "View More"
+    },
+    {
+        "id": 3,
+        "name": "Nature Language",
+        "category": "AI",
+        "img": "./img/nlp.png",
+        "url": "https://github.com/lee-seokmin/nature_language",
+        "state": "View More"
+    },
+    {
+        "id": 4,
+        "name": "NewsGeneration",
+        "category": "AI",
+        "img": "./img/newsgeneration.png",
+        "url": "https://github.com/lee-seokmin/NewsGeneration",
+        "state": "View More"
+    },
+    {
+        "id": 5,
+        "name": "지금 뭐 먹지?",
+        "category": "Application",
+        "img": "./img/deliverydecision.png",
+        "url": "https://github.com/lee-seokmin/DeliveryDecision",
+        "state": "View More"
+    },
+    {
+        "id": 6,
+        "name": "모작교",
+        "category": "Application",
+        "img": "./img/mojakgyo.png",
+        "url": "https://github.com/lee-seokmin/MoJakGyo",
+        "state": "View More"
+    },
+    {
+        "id": 7,
+        "name": "API 사이트",
+        "category": "Website",
+        "img": "./img/api_site.png",
+        "url": "https://github.com/lee-seokmin/API-site",
+        "state": "View More"
+    },
+    {
+        "id": 8,
+        "name": "헤어스타일 테스트",
+        "category": "Website",
+        "img": "./img/hairstyle.png",
+        "url": "https://github.com/lee-seokmin/hairstyle_ai",
+        "state": "View More"
+    },
+    {
+        "id": 9,
+        "name": "블록체인 기반 투표 시스템",
+        "category": "System",
+        "img": "./img/votingsystem.png",
+        "url": "https://github.com/lee-seokmin/BlockChainVotingSystem",
+        "state": "View More"
+    },
+    {
+        "id": 10,
+        "name": "Virtual World",
+        "category": "AI",
+        "img": "./img/virtualworld.png",
+        "url": "https://github.com/lee-seokmin/VirtualWorld",
+        "state": "View More"
+    },
+    {
+      "id": 11,
+      "name": "TeamUp",
+      "category": "Website",
+      "img": "./img/team-up.png",
+      "url": "https://github.com/TeamUpLabs/team-up",
+      "state": "View More"
+    }
+]
