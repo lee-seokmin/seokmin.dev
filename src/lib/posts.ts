@@ -1,5 +1,3 @@
-'use server';
-
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
@@ -22,12 +20,7 @@ export async function getPostBySlug(slug: string) {
   
   if (!post) return null;
 
-  // Serialize the MDX content
-  const mdxSource = await serialize(post.content, {
-    mdxOptions: {
-      development: process.env.NODE_ENV === 'development',
-    },
-  });
+  const mdxSource = await serializeMDX(post.content);
 
   return {
     ...post,
@@ -43,7 +36,6 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
   categories.forEach((category) => {
     const categoryPath = path.join(postsDirectory, category);
 
-    // Skip if not a directory
     if (!fs.statSync(categoryPath).isDirectory()) return;
 
     const posts = fs.readdirSync(categoryPath);
@@ -51,7 +43,6 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
     posts.forEach((postDir) => {
       const postPath = path.join(categoryPath, postDir);
 
-      // Skip if not a directory
       if (!fs.statSync(postPath).isDirectory()) return;
 
       const files = fs.readdirSync(postPath);
@@ -62,15 +53,14 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
         const fileContents = fs.readFileSync(filePath, 'utf8');
         const { data, content } = matter(fileContents);
 
-        // Convert relative thumbnail path to absolute path
         let thumbnail = data.thumbnail || '';
         if (thumbnail && thumbnail.startsWith('./')) {
           const possibleThumbnailPath = path.join(postPath, thumbnail.substring(2));
-          // Check if the file exists in _posts
+
           if (fs.existsSync(possibleThumbnailPath)) {
-            thumbnail = `/_posts/${category}/${postDir}/${thumbnail.substring(2)}`;
+            thumbnail = `/api/images/${category}/${postDir}/${thumbnail.substring(2)}`;
           } else {
-            thumbnail = ''; // Or set a default if needed
+            thumbnail = '';
           }
         }
 
@@ -92,7 +82,6 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
     });
   });
 
-  // Sort posts based on sortBy parameter
   switch (sortBy) {
     case 'newest':
       return allPosts.sort((a, b) => new Date(b.create_at).getTime() - new Date(a.create_at).getTime());
@@ -101,14 +90,19 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
     case 'longest':
       return allPosts.sort((a, b) => b.content.length - a.content.length);
     default:
-      // Default to newest
       return allPosts.sort((a, b) => new Date(b.create_at).getTime() - new Date(a.create_at).getTime());
   }
 }
 
 export async function serializeMDX(content: string) {
   try {
-    const mdxSource = await serialize(content, {
+    let processedContent = content;
+    processedContent = processedContent.replace(
+      /\/_posts\/([^"'\s)]+)/g,
+      '/api/images/$1'
+    );
+
+    const mdxSource = await serialize(processedContent, {
       parseFrontmatter: true,
     });
     return mdxSource;

@@ -129,27 +129,44 @@ const MDXComponents = {
     );
   },
 
+  // Videos
+  video: ({ children, ...props }: any) => (
+    <video className="w-full my-6" {...props}>
+      {children}
+    </video>
+  ),
+
+  // Video sources
+  source: ({ src, ...props }: any) => {
+    if (!src) return null;
+
+    if (src.startsWith('/_posts/')) {
+      const pathAfterPosts = src.substring('/_posts/'.length);
+      src = `/api/images/${pathAfterPosts}`;
+    }
+
+    return <source src={src} {...props} />;
+  },
+
   // Images
   img: ({ src, alt, ...props }: any) => {
     if (!src) return null;
 
-    // Handle relative paths for images in _posts directory
-    const isRelativePath = !src.startsWith('http') && !src.startsWith('/');
-    if (isRelativePath) {
-      // For relative paths, assume they are in _posts and map to public/_posts
-      src = `/_posts/${src}`;
+    if (src.startsWith('/_posts/')) {
+      const pathAfterPosts = src.substring('/_posts/'.length);
+      src = `/api/images/${pathAfterPosts}`;
     }
 
     return (
       <Image
         src={src}
-        alt={alt || 'Blog image'}
+        alt={alt || ''}
         width={800}
-        height={400}
+        height={600}
         className="rounded-lg w-full h-auto my-6"
         {...props}
       />
-    );
+    )
   },
 
   // Blockquotes
