@@ -12,8 +12,8 @@ export default function NavBar() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-background/90 backdrop-blur-lg rounded-full px-3 py-2 z-50 shadow-lg shadow-black/[0.03] border border-border hover:px-6 hover:py-3 transition-all duration-300">
-      <ul className="flex justify-center items-center gap-2 md:gap-4 hover:gap-6 transition-all duration-300">
+    <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-background/90 backdrop-blur-lg rounded-full px-3 py-2 z-50 shadow-lg shadow-black/[0.03] border border-border hover:px-6 hover:py-2.5 transition-all duration-300">
+      <ul className="flex justify-center items-center gap-2 md:gap-4 hover:gap-8 transition-all duration-300">
         {pathname.startsWith("/blog/") && (
           <TableOfContents />
         )}
