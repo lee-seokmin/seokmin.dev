@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+// Maximum file size to serve (50MB to leave some buffer)
+const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
 function findImageFile(imagePath: string): string | null {
   const blogDir = path.join(process.cwd(), 'data', 'blog');
   const craftDir = path.join(process.cwd(), 'data', 'craft', 'img');
@@ -60,6 +63,28 @@ function findImageFile(imagePath: string): string | null {
   return null;
 }
 
+function getContentType(ext: string): string {
+  switch (ext.toLowerCase()) {
+    case '.jpg':
+    case '.jpeg':
+      return 'image/jpeg';
+    case '.png':
+      return 'image/png';
+    case '.gif':
+      return 'image/gif';
+    case '.webp':
+      return 'image/webp';
+    case '.svg':
+      return 'image/svg+xml';
+    case '.mov':
+      return 'video/quicktime';
+    case '.mp4':
+      return 'video/mp4';
+    default:
+      return 'application/octet-stream';
+  }
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
@@ -83,40 +108,34 @@ export async function GET(
       return new NextResponse('Not Found', { status: 404 });
     }
 
-    const fileBuffer = fs.readFileSync(fullPath);
-
-    const ext = path.extname(fullPath).toLowerCase();
-    let contentType = 'application/octet-stream';
-
-    switch (ext) {
-      case '.jpg':
-      case '.jpeg':
-        contentType = 'image/jpeg';
-        break;
-      case '.png':
-        contentType = 'image/png';
-        break;
-      case '.gif':
-        contentType = 'image/gif';
-        break;
-      case '.webp':
-        contentType = 'image/webp';
-        break;
-      case '.svg':
-        contentType = 'image/svg+xml';
-        break;
-      case '.mov':
-        contentType = 'video/quicktime';
-        break;
-      case '.mp4':
-        contentType = 'video/mp4';
-        break;
+    // Check file size before reading
+    const stats = fs.statSync(fullPath);
+    if (stats.size > MAX_FILE_SIZE) {
+      return new NextResponse('File too large', { status: 413 });
     }
 
-    return new NextResponse(fileBuffer, {
+    const ext = path.extname(fullPath);
+    const contentType = getContentType(ext);
+
+    // For smaller files, read into memory as before
+    if (stats.size < 1024 * 1024) { // 1MB threshold for memory reading
+      const fileBuffer = fs.readFileSync(fullPath);
+      return new NextResponse(fileBuffer, {
+        headers: {
+          'Content-Type': contentType,
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        },
+      });
+    }
+
+    // For larger files, use streaming
+    const fileStream = fs.createReadStream(fullPath);
+
+    return new NextResponse(fileStream as any, {
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=31536000, immutable',
+        'Content-Length': stats.size.toString(),
       },
     });
   } catch (error) {
