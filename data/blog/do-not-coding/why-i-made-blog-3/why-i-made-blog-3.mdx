@@ -57,7 +57,7 @@ best: true
 `/var/task`에도 없고 `/tmp`에도 없고 `/`에도 없고...
 계속 이런 오류들만 나타났습니다.
 
-![로그](/_posts/do-not-coding/why-i-made-blog-3/folder_logging.jpg)
+![로그](./folder_logging.jpg)
 
 ## 해결
 
@@ -98,13 +98,13 @@ best: true
 하지만 **API**를 구성하고 실행해본 결과, 메인 화면에서는 포스트가 잘 가져와졌지만 이후 상세 페이지로 넘어 갈 수가 없었습니다.
 `dynamic route`를 사용하여 포스트의 상세 페이지로 이동하는데 상세 페이지에서 `api`호출이 정상적으로 되지 않았습니다.
 
-![로그](/_posts/do-not-coding/why-i-made-blog-3/api_logging.jpg)
+![로그](./api_logging.jpg)
 
 ## 해결
 
 API의 URL을 상대 경로가 아닌 절대 경로를 사용했습니다.
 예를 들어 **/api/files**가 아닌 **http://localhost:3000/api/files**로 바꾸었습니다.
-![URL](/_posts/do-not-coding/why-i-made-blog-3/api_url.jpg)
+![URL](./api_url.jpg)
 위의 URL로 데이터를 fetch하여 상세 페이지를 볼 수 있게 하였습니다.
 
 # 최종 폴더 구조

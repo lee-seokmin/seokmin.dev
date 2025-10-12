@@ -4,7 +4,7 @@ import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
 import { Post } from '@/types/Post';
 
-const postsDirectory = path.join(process.cwd(), '_posts');
+const postsDirectory = path.join(process.cwd(), 'data', 'blog');
 
 export async function getAllCategories(): Promise<string[]> {
   const categories = fs.readdirSync(postsDirectory);
@@ -20,7 +20,7 @@ export async function getPostBySlug(slug: string) {
   
   if (!post) return null;
 
-  const mdxSource = await serializeMDX(post.content);
+  const mdxSource = await serializeMDX(post.content, post.category, post.slug);
 
   return {
     ...post,
@@ -94,11 +94,27 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
   }
 }
 
-export async function serializeMDX(content: string) {
+export async function serializeMDX(content: string, category?: string, postDir?: string) {
   try {
     let processedContent = content;
+
+    // 상대경로(예: ./image.jpg)를 절대경로(/data/blog/category/postDir/...)로 변환
     processedContent = processedContent.replace(
-      /\/_posts\/([^"'\s)]+)/g,
+      /(\.\.?\/[^"'\s)]+\.(jpg|jpeg|png|gif|webp|svg|mov|mp4))/g,
+      (match, path) => {
+        if (path.startsWith('./') && category && postDir) {
+          return `/data/blog/${category}/${postDir}/${path.substring(2)}`;
+        } else if (path.startsWith('../')) {
+          // 상위 디렉토리 상대경로의 경우도 처리할 수 있지만 일단 기본 처리
+          return `/data/blog/${path.substring(3)}`;
+        }
+        return path;
+      }
+    );
+
+    // 기존 절대경로 변환 로직 (/data/blog/ 패턴)
+    processedContent = processedContent.replace(
+      /\/data\/blog\/([^"'\s)]+)/g,
       '/api/images/$1'
     );
 

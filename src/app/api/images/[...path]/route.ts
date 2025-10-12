@@ -9,9 +9,9 @@ export async function GET(
   try {
     const { path: pathSegments } = await params;
     const imagePath = pathSegments.join('/');
-    const fullPath = path.join(process.cwd(), '_posts', imagePath);
+    const fullPath = path.join(process.cwd(), 'data', 'blog', imagePath);
 
-    if (!fullPath.startsWith(path.join(process.cwd(), '_posts'))) {
+    if (!fullPath.startsWith(path.join(process.cwd(), 'data', 'blog'))) {
       return new NextResponse('Not Found', { status: 404 });
     }
     if (!fs.existsSync(fullPath)) {

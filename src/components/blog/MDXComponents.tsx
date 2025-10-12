@@ -140,8 +140,8 @@ const MDXComponents = {
   source: ({ src, ...props }: any) => {
     if (!src) return null;
 
-    if (src.startsWith('/_posts/')) {
-      const pathAfterPosts = src.substring('/_posts/'.length);
+    if (src.startsWith('/data/blog/')) {
+      const pathAfterPosts = src.substring('/data/blog/'.length);
       src = `/api/images/${pathAfterPosts}`;
     }
 
@@ -152,8 +152,8 @@ const MDXComponents = {
   img: ({ src, alt, ...props }: any) => {
     if (!src) return null;
 
-    if (src.startsWith('/_posts/')) {
-      const pathAfterPosts = src.substring('/_posts/'.length);
+    if (src.startsWith('/data/blog/')) {
+      const pathAfterPosts = src.substring('/data/blog/'.length);
       src = `/api/images/${pathAfterPosts}`;
     }
 
