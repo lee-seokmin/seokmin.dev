@@ -82,7 +82,7 @@ export default async function PostPage({ params }: PageProps) {
 
   return (
     <article className="py-24">
-      <div className="max-w-5xl mx-auto px-4">
+      <div className="max-w-5xl mx-auto px-3">
         {/* Header */}
         <header className="mb-12">
           <div className="flex items-center gap-2 mb-4">

@@ -133,15 +133,12 @@ const MDXComponents = {
   img: ({ src, alt, ...props }: any) => {
     if (!src) return null;
 
-    // Handle relative paths for images in _posts directory
     const isRelativePath = src.startsWith('/');
     let imageSrc: string;
 
     if (isRelativePath) {
-      // Absolute path like '/data/blog/travel/europe-3/cover.jpg'
       imageSrc = `/api/images${src}`;
     } else {
-      // Relative path like './donauu-tower.jpg' - strip the './' prefix
       const relativePath = src.startsWith('./') ? src.substring(2) : src;
       imageSrc = `/api/images/${relativePath}`;
     }
@@ -153,7 +150,10 @@ const MDXComponents = {
         width={800}
         height={400}
         className="rounded-lg w-full h-auto my-6"
-        unoptimized={true} // Disable Next.js optimization for API-served images
+        placeholder="blur"
+        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+        loading="lazy"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         {...props}
       />
     );
