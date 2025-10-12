@@ -22,13 +22,14 @@ export default function PostCard({ post }: PostCardProps) {
       {post.thumbnail && (
         <AspectRatio ratio={16 / 9} className="bg-muted rounded-t-lg">
           <Image
-            src={post.thumbnail}
+            src={`/api/images${post.thumbnail}`}
             alt={post.title}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
             quality={75}
+            unoptimized
           />
         </AspectRatio>
       )}

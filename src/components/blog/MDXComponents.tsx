@@ -129,44 +129,34 @@ const MDXComponents = {
     );
   },
 
-  // Videos
-  video: ({ children, ...props }: any) => (
-    <video className="w-full my-6" {...props}>
-      {children}
-    </video>
-  ),
-
-  // Video sources
-  source: ({ src, ...props }: any) => {
-    if (!src) return null;
-
-    if (src.startsWith('/data/blog/')) {
-      const pathAfterPosts = src.substring('/data/blog/'.length);
-      src = `/api/images/${pathAfterPosts}`;
-    }
-
-    return <source src={src} {...props} />;
-  },
-
   // Images
   img: ({ src, alt, ...props }: any) => {
     if (!src) return null;
 
-    if (src.startsWith('/data/blog/')) {
-      const pathAfterPosts = src.substring('/data/blog/'.length);
-      src = `/api/images/${pathAfterPosts}`;
+    // Handle relative paths for images in _posts directory
+    const isRelativePath = src.startsWith('/');
+    let imageSrc: string;
+
+    if (isRelativePath) {
+      // Absolute path like '/data/blog/travel/europe-3/cover.jpg'
+      imageSrc = `/api/images${src}`;
+    } else {
+      // Relative path like './donauu-tower.jpg' - strip the './' prefix
+      const relativePath = src.startsWith('./') ? src.substring(2) : src;
+      imageSrc = `/api/images/${relativePath}`;
     }
 
     return (
       <Image
-        src={src}
-        alt={alt || ''}
+        src={imageSrc}
+        alt={alt || 'Blog image'}
         width={800}
-        height={600}
+        height={400}
         className="rounded-lg w-full h-auto my-6"
+        unoptimized={true} // Disable Next.js optimization for API-served images
         {...props}
       />
-    )
+    );
   },
 
   // Blockquotes

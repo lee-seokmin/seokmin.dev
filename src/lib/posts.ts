@@ -1,3 +1,5 @@
+'use server';
+
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
@@ -20,7 +22,12 @@ export async function getPostBySlug(slug: string) {
   
   if (!post) return null;
 
-  const mdxSource = await serializeMDX(post.content, post.category, post.slug);
+  // Serialize the MDX content
+  const mdxSource = await serialize(post.content, {
+    mdxOptions: {
+      development: process.env.NODE_ENV === 'development',
+    },
+  });
 
   return {
     ...post,
@@ -36,6 +43,7 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
   categories.forEach((category) => {
     const categoryPath = path.join(postsDirectory, category);
 
+    // Skip if not a directory
     if (!fs.statSync(categoryPath).isDirectory()) return;
 
     const posts = fs.readdirSync(categoryPath);
@@ -43,6 +51,7 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
     posts.forEach((postDir) => {
       const postPath = path.join(categoryPath, postDir);
 
+      // Skip if not a directory
       if (!fs.statSync(postPath).isDirectory()) return;
 
       const files = fs.readdirSync(postPath);
@@ -53,15 +62,10 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
         const fileContents = fs.readFileSync(filePath, 'utf8');
         const { data, content } = matter(fileContents);
 
+        // Convert relative thumbnail path to absolute path
         let thumbnail = data.thumbnail || '';
         if (thumbnail && thumbnail.startsWith('./')) {
-          const possibleThumbnailPath = path.join(postPath, thumbnail.substring(2));
-
-          if (fs.existsSync(possibleThumbnailPath)) {
-            thumbnail = `/api/images/${category}/${postDir}/${thumbnail.substring(2)}`;
-          } else {
-            thumbnail = '';
-          }
+          thumbnail = `/data/blog/${category}/${postDir}/${thumbnail.substring(2)}`;
         }
 
         const post: Post = {
@@ -82,6 +86,7 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
     });
   });
 
+  // Sort posts based on sortBy parameter
   switch (sortBy) {
     case 'newest':
       return allPosts.sort((a, b) => new Date(b.create_at).getTime() - new Date(a.create_at).getTime());
@@ -90,35 +95,14 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
     case 'longest':
       return allPosts.sort((a, b) => b.content.length - a.content.length);
     default:
+      // Default to newest
       return allPosts.sort((a, b) => new Date(b.create_at).getTime() - new Date(a.create_at).getTime());
   }
 }
 
-export async function serializeMDX(content: string, category?: string, postDir?: string) {
+export async function serializeMDX(content: string) {
   try {
-    let processedContent = content;
-
-    // 상대경로(예: ./image.jpg)를 절대경로(/data/blog/category/postDir/...)로 변환
-    processedContent = processedContent.replace(
-      /(\.\.?\/[^"'\s)]+\.(jpg|jpeg|png|gif|webp|svg|mov|mp4))/g,
-      (match, path) => {
-        if (path.startsWith('./') && category && postDir) {
-          return `/data/blog/${category}/${postDir}/${path.substring(2)}`;
-        } else if (path.startsWith('../')) {
-          // 상위 디렉토리 상대경로의 경우도 처리할 수 있지만 일단 기본 처리
-          return `/data/blog/${path.substring(3)}`;
-        }
-        return path;
-      }
-    );
-
-    // 기존 절대경로 변환 로직 (/data/blog/ 패턴)
-    processedContent = processedContent.replace(
-      /\/data\/blog\/([^"'\s)]+)/g,
-      '/api/images/$1'
-    );
-
-    const mdxSource = await serialize(processedContent, {
+    const mdxSource = await serialize(content, {
       parseFrontmatter: true,
     });
     return mdxSource;

@@ -2,6 +2,56 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+function findImageFile(imagePath: string): string | null {
+  const blogDir = path.join(process.cwd(), 'data', 'blog');
+
+  // Remove 'data/blog/' prefix if present to avoid duplication
+  let cleanPath = imagePath;
+  if (imagePath.startsWith('data/blog/')) {
+    cleanPath = imagePath.substring('data/blog/'.length);
+  }
+
+  // First try the exact path
+  const exactPath = path.join(blogDir, cleanPath);
+  if (fs.existsSync(exactPath)) {
+    return exactPath;
+  }
+
+  // If not found and it's a simple filename, search in all subdirectories
+  if (!cleanPath.includes('/') && cleanPath.includes('.')) {
+    const extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.mov', '.mp4'];
+
+    function searchDirectories(dir: string): string | null {
+      const items = fs.readdirSync(dir);
+
+      for (const item of items) {
+        const itemPath = path.join(dir, item);
+        const stat = fs.statSync(itemPath);
+
+        if (stat.isDirectory() && item !== '.DS_Store') {
+          // Check if any file in this directory matches our image
+          for (const ext of extensions) {
+            const testPath = path.join(itemPath, cleanPath);
+            if (fs.existsSync(testPath)) {
+              return testPath;
+            }
+          }
+
+          // Recursively search subdirectories
+          const found = searchDirectories(itemPath);
+          if (found) return found;
+        }
+      }
+
+      return null;
+    }
+
+    return searchDirectories(blogDir);
+  }
+
+  return null;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ path: string[] }> }
@@ -9,12 +59,18 @@ export async function GET(
   try {
     const { path: pathSegments } = await params;
     const imagePath = pathSegments.join('/');
-    const fullPath = path.join(process.cwd(), 'data', 'blog', imagePath);
+    const fullPath = findImageFile(imagePath);
 
-    if (!fullPath.startsWith(path.join(process.cwd(), 'data', 'blog'))) {
+    console.log('Requested:', imagePath);
+    console.log('Resolved to:', fullPath);
+
+    if (!fullPath) {
       return new NextResponse('Not Found', { status: 404 });
     }
-    if (!fs.existsSync(fullPath)) {
+
+    // Security check - ensure the file is within the blog directory
+    const blogDir = path.join(process.cwd(), 'data', 'blog');
+    if (!fullPath.startsWith(blogDir)) {
       return new NextResponse('Not Found', { status: 404 });
     }
 
