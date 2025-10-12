@@ -4,17 +4,25 @@ import path from 'path';
 
 function findImageFile(imagePath: string): string | null {
   const blogDir = path.join(process.cwd(), 'data', 'blog');
+  const craftDir = path.join(process.cwd(), 'data', 'craft', 'img');
 
-  // Remove 'data/blog/' prefix if present to avoid duplication
+  // Remove 'data/blog/' or 'data/craft/img/' prefix if present to avoid duplication
   let cleanPath = imagePath;
   if (imagePath.startsWith('data/blog/')) {
     cleanPath = imagePath.substring('data/blog/'.length);
+  } else if (imagePath.startsWith('data/craft/img/')) {
+    cleanPath = imagePath.substring('data/craft/img/'.length);
   }
 
   // First try the exact path
   const exactPath = path.join(blogDir, cleanPath);
   if (fs.existsSync(exactPath)) {
     return exactPath;
+  }
+
+  const exactCraftPath = path.join(craftDir, cleanPath);
+  if (fs.existsSync(exactCraftPath)) {
+    return exactCraftPath;
   }
 
   // If not found and it's a simple filename, search in all subdirectories
@@ -46,7 +54,7 @@ function findImageFile(imagePath: string): string | null {
       return null;
     }
 
-    return searchDirectories(blogDir);
+    return searchDirectories(blogDir) || searchDirectories(craftDir);
   }
 
   return null;
@@ -70,7 +78,8 @@ export async function GET(
 
     // Security check - ensure the file is within the blog directory
     const blogDir = path.join(process.cwd(), 'data', 'blog');
-    if (!fullPath.startsWith(blogDir)) {
+    const craftDir = path.join(process.cwd(), 'data', 'craft', 'img');
+    if (!fullPath.startsWith(blogDir) && !fullPath.startsWith(craftDir)) {
       return new NextResponse('Not Found', { status: 404 });
     }
 
