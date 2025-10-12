@@ -17,7 +17,7 @@ export default function CraftLayout({
   children: ReactNode;
 }>) {
   return (
-    <div className="px-6">
+    <div className="px-3">
       <NavBar />
       {children}
       <Footer />

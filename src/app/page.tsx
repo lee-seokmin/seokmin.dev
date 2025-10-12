@@ -14,7 +14,9 @@ export default async function Home() {
   const posts = await getRecentPosts();
 
   return (
-    <div className="bg-background space-y-24 px-6" style={{ width: '100%', height: '100vh', position: 'relative' }}>
+    <div className="bg-background space-y-24 px-3" style={{ width: '100%', height: '100vh', position: 'relative' }}>
+      <NavBar />
+
       <Orb
         hoverIntensity={1.2}
         rotateOnHover={true}
@@ -22,9 +24,7 @@ export default async function Home() {
         forceHoverState={false}
       />
 
-      <NavBar />
-
-      <h1 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl md:text-7xl font-black text-center">SEOKMIN.DEV</h1>
+      <h1 className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl md:text-5xl lg:text-7xl font-black text-center">SEOKMIN.DEV</h1>
 
       <div className="max-w-6xl mx-auto space-y-2">
         <h2 className="text-2xl font-bold">Recent Posts</h2>
