@@ -3,88 +3,99 @@
         "id": 1,
         "name": "PhotoFrame",
         "category": "Website",
-        "img": "./img/photoframe.png",
+        "img": "img/photoframe.png",
         "url": "https://github.com/lee-seokmin/PhotoFrame",
-        "state": "View More"
+        "state": "View More",
+        "description": "사진을 활용한 창의적인 프레임 웹사이트로, 사용자들이 자신의 사진을 업로드하여 다양한 프레임 효과를 적용할 수 있는 서비스입니다."
     },
     {
         "id": 2,
         "name": "DownBit",
         "category":"Website",
-        "img": "./img/downbit.png",
+        "img": "img/downbit.png",
         "url": "https://github.com/lee-seokmin/DownBit",
-        "state": "View More"
+        "state": "View More",
+        "description": "업비트 클론 웹사이트로, 다양한 암호화폐들의 정보를 WebSocket을 활용하여 실시간으로 업데이트합니다."
     },
     {
         "id": 3,
         "name": "Nature Language",
         "category": "AI",
-        "img": "./img/nlp.png",
+        "img": "img/nlp.png",
         "url": "https://github.com/lee-seokmin/nature_language",
-        "state": "View More"
+        "state": "View More",
+        "description": "자연어 처리 기술을 활용한 AI 모델로, 텍스트의 감성 분석을 통해 긍정, 부정, 중립을 판단합니다."
     },
     {
         "id": 4,
         "name": "NewsGeneration",
         "category": "AI",
-        "img": "./img/newsgeneration.png",
+        "img": "img/newsgeneration.png",
         "url": "https://github.com/lee-seokmin/NewsGeneration",
-        "state": "View More"
+        "state": "View More",
+        "description": "인공지능을 활용한 축구 기사 생성 시스템으로, 키워드를 입력하여 기사를 생성합니다."
     },
     {
         "id": 5,
         "name": "지금 뭐 먹지?",
         "category": "Application",
-        "img": "./img/deliverydecision.png",
+        "img": "img/deliverydecision.png",
         "url": "https://github.com/lee-seokmin/DeliveryDecision",
-        "state": "View More"
+        "state": "View More",
+        "description": "메뉴 선택에 도움을 주는 모바일 애플리케이션으로, 사용자의 취향과 상황을 분석하여 최적의 음식을 추천합니다."
     },
     {
         "id": 6,
         "name": "모작교",
         "category": "Application",
-        "img": "./img/mojakgyo.png",
+        "img": "img/mojakgyo.png",
         "url": "https://github.com/lee-seokmin/MoJakGyo",
-        "state": "View More"
+        "state": "View More",
+        "description": "모델과 작가를 연결하는 플랫폼으로, 사진 촬영을 위한 모델과 작가를 연결합니다."
     },
     {
         "id": 7,
         "name": "API 사이트",
         "category": "Website",
-        "img": "./img/api_site.png",
+        "img": "img/api_site.png",
         "url": "https://github.com/lee-seokmin/API-site",
-        "state": "View More"
+        "state": "View More",
+        "description": "RESTful API 문서화 웹사이트로, 개발자들이 API 엔드포인트를 쉽게 이해하고 사용할 수 있도록 구성되었습니다."
     },
     {
         "id": 8,
         "name": "헤어스타일 테스트",
         "category": "Website",
-        "img": "./img/hairstyle.png",
+        "img": "img/hairstyle.png",
         "url": "https://github.com/lee-seokmin/hairstyle_ai",
-        "state": "View More"
+        "state": "View More",
+        "description": "AI 기술을 활용한 헤어스타일 추천 웹사이트로, 사용자의 얼굴형을 분석하여 최적의 헤어스타일을 추천합니다."
     },
     {
         "id": 9,
         "name": "블록체인 기반 투표 시스템",
         "category": "System",
-        "img": "./img/votingsystem.png",
+        "img": "img/votingsystem.png",
         "url": "https://github.com/lee-seokmin/BlockChainVotingSystem",
-        "state": "View More"
+        "state": "View More",
+        "description": "블록체인 기술을 활용한 안전하고 투명한 투표 시스템으로, 위변조가 불가능한 분산원장 기술을 적용했습니다."
     },
     {
         "id": 10,
         "name": "Virtual World",
         "category": "AI",
-        "img": "./img/virtualworld.png",
+        "img": "img/virtualworld.png",
         "url": "https://github.com/lee-seokmin/VirtualWorld",
-        "state": "View More"
+        "state": "View More",
+        "description": "인공지능을 활용한 가상현실 세계 구축 프로젝트로, 사용자들이 상호작용할 수 있는 몰입형 환경을 제공합니다."
     },
     {
       "id": 11,
       "name": "TeamUp",
       "category": "Website",
-      "img": "./img/team-up.png",
+      "img": "img/team-up.png",
       "url": "https://github.com/TeamUpLabs/team-up",
-      "state": "View More"
+      "state": "View More",
+      "description": "팀 프로젝트 협업 플랫폼으로, 실시간 커뮤니케이션과 작업 관리를 통해 효율적인 팀 작업을 지원합니다."
     }
 ]
