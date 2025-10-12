@@ -8,19 +8,22 @@ export default function ProjectCard({ project }: { project: Project }) {
   return (
     <div className="group cursor-pointer">
       <Link href={project.url} target={project.state == "View More" ? "_blank" : "_self"}>
-        <div className="relative overflow-hidden rounded-lg bg-white shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300">
-          <AspectRatio ratio={16 / 10}>
+        <div className="relative overflow-hidden rounded-lg bg-transparent shadow-sm border border-border hover:shadow-lg hover:border-ring transition-all duration-300">
+          <AspectRatio ratio={16 / 10} className="bg-muted">
             <Image
               src={`/api/images/data/craft/${project.img}`}
               alt={project.name}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-cover transition-transform duration-300 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="absolute bottom-4 left-4 right-4">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-white text-black backdrop-blur-sm opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+              <Badge
+                variant="secondary"
+                className="rounded-full font-semibold opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300"
+              >
                 {project.state}
-              </span>
+              </Badge>
             </div>
           </AspectRatio>
         </div>
