@@ -38,7 +38,7 @@ export default function Footer() {
             </a>
             <div className="flex space-x-4">
               <a
-                href="https://github.com/lee-soekmin"
+                href="https://github.com/lee-seokmin"
                 className="text-muted-foreground hover:text-background transition-colors"
                 aria-label="GitHub"
               >
