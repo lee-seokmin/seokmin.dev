@@ -4,8 +4,11 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider"
 
 export const metadata: Metadata = {
-  title: "Seokmin.dev",
+  title: "SEOKMIN.DEV",
   description: "Seokmin's personal website",
+  icons: {
+    icon: "/next.svg",
+  },
 };
 
 export default function RootLayout({
