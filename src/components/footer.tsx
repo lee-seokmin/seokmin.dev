@@ -27,7 +27,7 @@ export default function Footer() {
         </div>
 
         {/* Contact & Social */}
-        <div className="space-y-2 self-center justify-self-end">
+        <div className="space-y-2 self-center justify-self-start md:justify-self-end">
           <h4 className="text-lg font-semibold text-background">Connect</h4>
           <div className="flex flex-col space-y-2">
             <a
