@@ -147,7 +147,8 @@ export default function TableOfContents() {
                   key={heading.id}
                   onClick={() => handleHeadingClick(heading.id)}
                   className={`
-                        w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-200 hover:bg-muted/50 cursor-pointer
+                        w-full text-left px-3 py-2 rounded-md text-sm transition-all duration-200
+                        hover:bg-muted/50 cursor-pointer outline-none
                         ${indentClass}
                         ${isActive
                       ? 'bg-primary/10 text-primary font-medium border-primary'
