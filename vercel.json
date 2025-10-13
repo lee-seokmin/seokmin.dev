@@ -1,17 +1,9 @@
 {
   "functions": {
-    "app/api/images/[...path]/route.ts": {
-      "excludeFiles": "data/**"
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
     }
   },
-  "builds": [
-    { "src": "app/api/images/[...path]/route.ts", "use": "@vercel/node" }
-  ],
-  "routes": [
-    {
-      "src": "/data/(.*)",
-      "headers": { "Cache-Control": "public, max-age=31536000, immutable" },
-      "dest": "/data/$1"
-    }
-  ]
+  "regions": ["sin1"],
+  "framework": "nextjs"
 }
