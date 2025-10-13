@@ -1,145 +1,71 @@
-import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { NextRequest, NextResponse } from "next/server";
+import path from "path";
+import fs from "fs/promises";
 
-// Maximum file size to serve (50MB to leave some buffer)
-const MAX_FILE_SIZE = 50 * 1024 * 1024;
+// ✅ 지원 파일 확장자 → 필요시 추가 가능
+const mimeMap: Record<string, string> = {
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".gif": "image/gif",
+  ".webp": "image/webp",
+  ".svg": "image/svg+xml",
+  ".mp4": "video/mp4",
+  ".mov": "video/quicktime",
+};
 
-function findImageFile(imagePath: string): string | null {
-  const blogDir = path.join(process.cwd(), 'data', 'blog');
-  const craftDir = path.join(process.cwd(), 'data', 'craft', 'img');
+// ✅ 이미지가 존재하는 두 개의 기본 디렉토리
+const ROOT_DIR = process.cwd();
+const BLOG_DIR = path.join(ROOT_DIR, "data", "blog");
+const CRAFT_DIR = path.join(ROOT_DIR, "data", "craft", "img");
 
-  // Remove 'data/blog/' or 'data/craft/img/' prefix if present to avoid duplication
-  let cleanPath = imagePath;
-  if (imagePath.startsWith('data/blog/')) {
-    cleanPath = imagePath.substring('data/blog/'.length);
-  } else if (imagePath.startsWith('data/craft/img/')) {
-    cleanPath = imagePath.substring('data/craft/img/'.length);
-  }
-
-  // First try the exact path
-  const exactPath = path.join(blogDir, cleanPath);
-  if (fs.existsSync(exactPath)) {
-    return exactPath;
-  }
-
-  const exactCraftPath = path.join(craftDir, cleanPath);
-  if (fs.existsSync(exactCraftPath)) {
-    return exactCraftPath;
-  }
-
-  // If not found and it's a simple filename, search in all subdirectories
-  if (!cleanPath.includes('/') && cleanPath.includes('.')) {
-    const extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.mov', '.mp4'];
-
-    function searchDirectories(dir: string): string | null {
-      const items = fs.readdirSync(dir);
-
-      for (const item of items) {
-        const itemPath = path.join(dir, item);
-        const stat = fs.statSync(itemPath);
-
-        if (stat.isDirectory() && item !== '.DS_Store') {
-          // Check if any file in this directory matches our image
-          for (const ext of extensions) {
-            const testPath = path.join(itemPath, cleanPath);
-            if (fs.existsSync(testPath)) {
-              return testPath;
-            }
-          }
-
-          // Recursively search subdirectories
-          const found = searchDirectories(itemPath);
-          if (found) return found;
-        }
-      }
-
-      return null;
-    }
-
-    return searchDirectories(blogDir) || searchDirectories(craftDir);
-  }
-
-  return null;
-}
-
-function getContentType(ext: string): string {
-  switch (ext.toLowerCase()) {
-    case '.jpg':
-    case '.jpeg':
-      return 'image/jpeg';
-    case '.png':
-      return 'image/png';
-    case '.gif':
-      return 'image/gif';
-    case '.webp':
-      return 'image/webp';
-    case '.svg':
-      return 'image/svg+xml';
-    case '.mov':
-      return 'video/quicktime';
-    case '.mp4':
-      return 'video/mp4';
-    default:
-      return 'application/octet-stream';
-  }
-}
-
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> }
-) {
+export async function GET(_: NextRequest, { params }: { params: { path: string[] } }) {
   try {
-    const { path: pathSegments } = await params;
-    const imagePath = pathSegments.join('/');
-    const fullPath = findImageFile(imagePath);
+    const relPath = params.path.join("/");
 
-    console.log('Requested:', imagePath);
-    console.log('Resolved to:', fullPath);
+    // 1️⃣ blog 디렉토리 확인
+    const blogPath = path.join(BLOG_DIR, relPath);
+    // 2️⃣ craft 디렉토리 확인
+    const craftPath = path.join(CRAFT_DIR, relPath);
 
-    if (!fullPath) {
-      return new NextResponse('Not Found', { status: 404 });
+    let filePath: string | null = null;
+
+    try {
+      await fs.access(blogPath);
+      filePath = blogPath;
+    } catch {
+      try {
+        await fs.access(craftPath);
+        filePath = craftPath;
+      } catch {
+        filePath = null;
+      }
     }
 
-    // Security check - ensure the file is within the blog directory
-    const blogDir = path.join(process.cwd(), 'data', 'blog');
-    const craftDir = path.join(process.cwd(), 'data', 'craft', 'img');
-    if (!fullPath.startsWith(blogDir) && !fullPath.startsWith(craftDir)) {
-      return new NextResponse('Not Found', { status: 404 });
+    if (!filePath) {
+      return new NextResponse("Not Found", { status: 404 });
     }
 
-    // Check file size before reading
-    const stats = fs.statSync(fullPath);
-    if (stats.size > MAX_FILE_SIZE) {
-      return new NextResponse('File too large', { status: 413 });
+    // ✅ 보안 검사: 루트 벗어난 접근 방지
+    if (!filePath.startsWith(BLOG_DIR) && !filePath.startsWith(CRAFT_DIR)) {
+      return new NextResponse("Forbidden", { status: 403 });
     }
 
-    const ext = path.extname(fullPath);
-    const contentType = getContentType(ext);
+    const ext = path.extname(filePath).toLowerCase();
+    const mime = mimeMap[ext] || "application/octet-stream";
+    const file = await fs.readFile(filePath);
 
-    // For smaller files, read into memory as before
-    if (stats.size < 1024 * 1024) { // 1MB threshold for memory reading
-      const fileBuffer = fs.readFileSync(fullPath);
-      return new NextResponse(fileBuffer, {
-        headers: {
-          'Content-Type': contentType,
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        },
-      });
-    }
-
-    // For larger files, use streaming
-    const fileStream = fs.createReadStream(fullPath);
-
-    return new NextResponse(fileStream as any, {
+    return new NextResponse(file, {
       headers: {
-        'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable',
-        'Content-Length': stats.size.toString(),
+        "Content-Type": mime,
+        "Cache-Control":
+          process.env.NODE_ENV === "production"
+            ? "public, max-age=31536000, immutable"
+            : "no-store",
       },
     });
-  } catch (error) {
-    console.error('Error serving file:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+  } catch (err) {
+    console.error("Image API error:", err);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

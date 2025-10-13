@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "functions": {
+    "api/images/[...path].func": {
+      "runtime": "nodejs20.x",
+      "includeFiles": "data/**/*",
+      "memory": 512,
+      "maxDuration": 10
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/images/(.*)",
+      "dest": "/api/images/$1"
+    }
+  ],
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }
+}
