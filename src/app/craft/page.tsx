@@ -19,10 +19,10 @@ export default async function CraftPage({ searchParams }: CraftPageProps) {
 
   return (
     <div className="py-24 space-y-8 max-w-6xl mx-auto">
-      <div className="bg-foreground p-12 rounded-lg space-y-2 text-center">
+      <header className="bg-foreground p-12 rounded-lg space-y-2 text-center">
         <h2 className="text-4xl font-bold text-background">Craft</h2>
         <span className="text-muted-foreground">My projects and experiences</span>
-      </div>
+      </header>
 
       <div className="flex items-center justify-between">
         <CategoryFilterClientWrapper

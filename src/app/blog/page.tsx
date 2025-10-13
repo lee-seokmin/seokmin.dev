@@ -22,10 +22,10 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   return (
     <div className="py-24 space-y-8 max-w-6xl mx-auto">
-      <div className="bg-foreground p-12 rounded-lg space-y-2 text-center">
+      <header className="bg-foreground p-12 rounded-lg space-y-2 text-center">
         <h2 className="text-4xl font-bold text-background">Blog</h2>
         <span className="text-muted-foreground">My thoughts and experiences</span>
-      </div>
+      </header>
 
       <div className="flex items-center justify-between">
         <CategoryFilterClientWrapper
@@ -34,7 +34,6 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         />
         <SortClientWrapper selectedSortOption={selectedSort} />
       </div>
-      
 
       {filteredPosts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
