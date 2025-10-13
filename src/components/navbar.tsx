@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun } from "lucide-react";
 import TableOfContents from "@/components/blog/TableOfContents";
+import { toast } from "sonner";
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -37,10 +38,13 @@ export default function NavBar() {
           variant="outline"
           size="icon"
           onClick={() => {
-            const themes = ["light", "dark", "system"];
-            const currentIndex = themes.indexOf(theme || "system");
+            const themes = ["light", "dark"];
+            const currentTheme = theme === "system" ? "light" : theme || "light";
+            const currentIndex = themes.indexOf(currentTheme);
             const nextIndex = (currentIndex + 1) % themes.length;
             setTheme(themes[nextIndex]);
+
+            toast.success("Theme changed to " + themes[nextIndex]);
           }}
           className="rounded-full border-2 border-border hover:border-primary/50 transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer"
         >
