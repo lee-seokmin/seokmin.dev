@@ -36,7 +36,12 @@ export default function NavBar() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          onClick={() => {
+            const themes = ["light", "dark", "system"];
+            const currentIndex = themes.indexOf(theme || "system");
+            const nextIndex = (currentIndex + 1) % themes.length;
+            setTheme(themes[nextIndex]);
+          }}
           className="rounded-full border-2 border-border hover:border-primary/50 transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer"
         >
           <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

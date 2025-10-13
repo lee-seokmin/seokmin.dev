@@ -28,7 +28,10 @@ const Comment = ({ className }: { className?: string }) => {
     scriptElement.setAttribute('data-reactions-enabled', '1');
     scriptElement.setAttribute('data-emit-metadata', '0');
     scriptElement.setAttribute('data-input-position', 'bottom');
-    scriptElement.setAttribute('data-theme', `${theme === 'dark' ? 'dark_dimmed' : 'light_protanopia'}`);
+    scriptElement.setAttribute('data-theme', `${
+      theme === 'dark' || theme === 'system' ? 'preferred_color_scheme' :
+      'light_protanopia'
+    }`);
     scriptElement.setAttribute('data-lang', 'ko');
     scriptElement.setAttribute('crossorigin', 'anonymous');
     scriptElement.async = true;
@@ -40,8 +43,11 @@ const Comment = ({ className }: { className?: string }) => {
     const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
     if (!iframe) return;
     
+    const giscusTheme = theme === 'dark' || theme === 'system' ? 'preferred_color_scheme' :
+                       'light_protanopia';
+    
     iframe.contentWindow?.postMessage(
-      { giscus: { setConfig: { theme } } },
+      { giscus: { setConfig: { theme: giscusTheme } } },
       'https://giscus.app'
     );
   }, [theme]);
