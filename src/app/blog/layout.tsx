@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Blog | SEOKMIN.DEV",
   description: "Seokmin's blog",
   icons: {
-    icon: "/next.svg",
+    icon: "/favicon.png",
   },
 };
 
