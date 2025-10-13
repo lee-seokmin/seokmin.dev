@@ -10,7 +10,7 @@ import { toast } from "sonner";
 
 export default function NavBar() {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
 
   return (
     <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-background/90 backdrop-blur-lg rounded-full px-3 py-2 z-50 shadow-lg shadow-black/[0.03] border border-border hover:px-6 hover:py-2.5 transition-all duration-300">
@@ -39,12 +39,13 @@ export default function NavBar() {
           size="icon"
           onClick={() => {
             const themes = ["light", "dark"];
-            const currentTheme = theme === "system" ? "light" : theme || "light";
-            const currentIndex = themes.indexOf(currentTheme);
+            const currentResolvedTheme = resolvedTheme || "light";
+            const currentIndex = themes.indexOf(currentResolvedTheme);
             const nextIndex = (currentIndex + 1) % themes.length;
-            setTheme(themes[nextIndex]);
+            const nextTheme = themes[nextIndex];
 
-            toast.success("Theme changed to " + themes[nextIndex]);
+            setTheme(nextTheme);
+            toast.success("Theme changed to " + nextTheme);
           }}
           className="rounded-full border-2 border-border hover:border-primary/50 transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer"
         >
