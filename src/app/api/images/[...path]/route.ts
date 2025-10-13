@@ -1,103 +1,126 @@
-import { NextRequest, NextResponse } from "next/server";
-import path from "path";
-import fs from "fs/promises";
+import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 
-// ✅ 지원 파일 확장자 → 필요시 추가 가능
-const mimeMap: Record<string, string> = {
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".gif": "image/gif",
-  ".webp": "image/webp",
-  ".svg": "image/svg+xml",
-  ".mp4": "video/mp4",
-  ".mov": "video/quicktime",
-};
+function findImageFile(imagePath: string): string | null {
+  const blogDir = path.join(process.cwd(), 'public', 'data', 'blog');
+  const craftDir = path.join(process.cwd(), 'public', 'data', 'craft', 'img');
 
-// ✅ 이미지가 존재하는 기본 디렉토리 (배포 환경에서는 public 디렉토리만 사용)
-const ROOT_DIR = process.cwd();
-const PUBLIC_DIR = path.join(ROOT_DIR, "public");
-const DATA_BLOG_DIR = path.join(ROOT_DIR, "data", "blog");
-const DATA_CRAFT_DIR = path.join(ROOT_DIR, "data", "craft", "img");
+  // Remove 'data/blog/' or 'data/craft/img/' prefix if present to avoid duplication
+  let cleanPath = imagePath;
+  if (imagePath.startsWith('public/data/blog/')) {
+    cleanPath = imagePath.substring('public/data/blog/'.length);
+  } else if (imagePath.startsWith('public/data/craft/img/')) {
+    cleanPath = imagePath.substring('public/data/craft/img/'.length);
+  }
 
-export async function GET(_: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  // First try the exact path
+  const exactPath = path.join(blogDir, cleanPath);
+  if (fs.existsSync(exactPath)) {
+    return exactPath;
+  }
+
+  const exactCraftPath = path.join(craftDir, cleanPath);
+  if (fs.existsSync(exactCraftPath)) {
+    return exactCraftPath;
+  }
+
+  // If not found and it's a simple filename, search in all subdirectories
+  if (!cleanPath.includes('/') && cleanPath.includes('.')) {
+    const extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.mov', '.mp4'];
+
+    function searchDirectories(dir: string): string | null {
+      const items = fs.readdirSync(dir);
+
+      for (const item of items) {
+        const itemPath = path.join(dir, item);
+        const stat = fs.statSync(itemPath);
+
+        if (stat.isDirectory() && item !== '.DS_Store') {
+          // Check if any file in this directory matches our image
+          for (const ext of extensions) {
+            const testPath = path.join(itemPath, cleanPath);
+            if (fs.existsSync(testPath)) {
+              return testPath;
+            }
+          }
+
+          // Recursively search subdirectories
+          const found = searchDirectories(itemPath);
+          if (found) return found;
+        }
+      }
+
+      return null;
+    }
+
+    return searchDirectories(blogDir) || searchDirectories(craftDir);
+  }
+
+  return null;
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> }
+) {
   try {
     const { path: pathSegments } = await params;
-    const relPath = pathSegments.join("/");
+    const imagePath = pathSegments.join('/');
+    const fullPath = findImageFile(imagePath);
 
-    // 디렉토리 우선순위 결정 (환경에 따라)
-    const isProduction = (process.env.NODE_ENV as string) === "production";
+    console.log('Requested:', imagePath);
+    console.log('Resolved to:', fullPath);
 
-    let filePath: string | null = null;
-
-    // 개발 환경에서는 data 디렉토리부터 직접 확인
-    if (!isProduction) {
-      // 요청 경로가 data/blog로 시작하면 data/blog 디렉토리 확인
-      if (relPath.startsWith('data/blog/')) {
-        const dataBlogPath = path.join(ROOT_DIR, relPath);
-        try {
-          await fs.access(dataBlogPath);
-          filePath = dataBlogPath;
-        } catch {
-          filePath = null;
-        }
-      }
-      // 요청 경로가 data/craft로 시작하면 data/craft 디렉토리 확인
-      else if (relPath.startsWith('data/craft/')) {
-        const dataCraftPath = path.join(ROOT_DIR, relPath);
-        try {
-          await fs.access(dataCraftPath);
-          filePath = dataCraftPath;
-        } catch {
-          filePath = null;
-        }
-      }
-      // 그 외의 경우는 public 디렉토리 확인
-      else {
-        const publicPath = path.join(PUBLIC_DIR, relPath);
-        try {
-          await fs.access(publicPath);
-          filePath = publicPath;
-        } catch {
-          filePath = null;
-        }
-      }
-    }
-    // 배포 환경에서는 public 디렉토리 우선 확인
-    else {
-      const publicPath = path.join(PUBLIC_DIR, relPath);
-      try {
-        await fs.access(publicPath);
-        filePath = publicPath;
-      } catch {
-        filePath = null;
-      }
+    if (!fullPath) {
+      return new NextResponse('Not Found', { status: 404 });
     }
 
-    if (!filePath) {
-      return new NextResponse("Not Found", { status: 404 });
+    // Security check - ensure the file is within the blog directory
+    const blogDir = path.join(process.cwd(), 'public', 'data', 'blog');
+    const craftDir = path.join(process.cwd(), 'public', 'data', 'craft', 'img');
+    if (!fullPath.startsWith(blogDir) && !fullPath.startsWith(craftDir)) {
+      return new NextResponse('Not Found', { status: 404 });
     }
 
-    // ✅ 보안 검사: 루트 벗어난 접근 방지
-    if (!filePath.startsWith(PUBLIC_DIR) && !filePath.startsWith(DATA_BLOG_DIR) && !filePath.startsWith(DATA_CRAFT_DIR)) {
-      return new NextResponse("Forbidden", { status: 403 });
+    const fileBuffer = fs.readFileSync(fullPath);
+
+    const ext = path.extname(fullPath).toLowerCase();
+    let contentType = 'application/octet-stream';
+
+    switch (ext) {
+      case '.jpg':
+      case '.jpeg':
+        contentType = 'image/jpeg';
+        break;
+      case '.png':
+        contentType = 'image/png';
+        break;
+      case '.gif':
+        contentType = 'image/gif';
+        break;
+      case '.webp':
+        contentType = 'image/webp';
+        break;
+      case '.svg':
+        contentType = 'image/svg+xml';
+        break;
+      case '.mov':
+        contentType = 'video/quicktime';
+        break;
+      case '.mp4':
+        contentType = 'video/mp4';
+        break;
     }
 
-    const ext = path.extname(filePath).toLowerCase();
-    const mime = mimeMap[ext] || "application/octet-stream";
-    const fileBuffer = await fs.readFile(filePath);
-
-    return new NextResponse(fileBuffer as any, {
+    return new NextResponse(fileBuffer, {
       headers: {
-        "Content-Type": mime,
-        "Cache-Control":
-          isProduction
-            ? "public, max-age=31536000, immutable"
-            : "no-store",
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=31536000, immutable',
       },
     });
-  } catch (err) {
-    console.error("Image API error:", err);
-    return new NextResponse("Internal Server Error", { status: 500 });
+  } catch (error) {
+    console.error('Error serving file:', error);
+    return new NextResponse('Internal Server Error', { status: 500 });
   }
 }
