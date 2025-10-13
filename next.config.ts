@@ -26,7 +26,13 @@ const nextConfig: NextConfig = {
 
   // Enable webpack 5
   webpack: (config, { isServer, dev }) => {
-    // Custom webpack configuration can be added here
+    // Exclude large static assets from serverless function bundle
+    if (isServer && !dev) {
+      config.externals = config.externals || [];
+      config.externals.push({
+        'public/data': 'commonjs public/data',
+      });
+    }
     return config;
   },
 
