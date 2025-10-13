@@ -3,7 +3,7 @@ import path from 'path';
 import { Project } from '@/types/Project';
 
 export function getAllProjects(): Project[] {
-    const projectsDirectory = path.join(process.cwd(), 'public', 'data', 'craft', 'projects.json');
+    const projectsDirectory = path.join(process.cwd(), 'data', 'craft', 'projects.json');
     const fileContents = fs.readFileSync(projectsDirectory, 'utf8');
     const projects: Project[] = JSON.parse(fileContents);
     return projects;

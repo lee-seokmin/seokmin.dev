@@ -6,7 +6,7 @@ import matter from 'gray-matter';
 import { serialize } from 'next-mdx-remote/serialize';
 import { Post } from '@/types/Post';
 
-const postsDirectory = path.join(process.cwd(), 'public', 'data', 'blog');
+const postsDirectory = path.join(process.cwd(), 'data', 'blog');
 
 export async function getAllCategories(): Promise<string[]> {
   const categories = fs.readdirSync(postsDirectory);

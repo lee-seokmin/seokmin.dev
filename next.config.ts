@@ -12,9 +12,7 @@ const nextConfig: NextConfig = {
   // Image optimization configuration
   images: {
     domains: [
-      'localhost',
-      'seokmin.dev',
-      'www.seokmin.dev',
+      'localhost'
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -22,18 +20,6 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60,
     // Allow API routes for image serving
     unoptimized: false,
-  },
-
-  // Enable webpack 5
-  webpack: (config, { isServer, dev }) => {
-    // Exclude large static assets from serverless function bundle
-    if (isServer && !dev) {
-      config.externals = config.externals || [];
-      config.externals.push({
-        'public/data': 'commonjs public/data',
-      });
-    }
-    return config;
   },
 
   // Enable MDX
@@ -73,6 +59,10 @@ const nextConfig: NextConfig = {
   // Configure rewrites
   async rewrites() {
     return [
+      {
+        source: '/blog/:file(.+\\.mp4)',
+        destination: '/api/images/:file',
+      },
       {
         source: '/api/:path*',
         destination: '/api/:path*',
