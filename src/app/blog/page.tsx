@@ -2,6 +2,7 @@ import { getAllPosts, getAllCategories } from '@/lib/posts';
 import PostCard from '@/components/blog/PostCard';
 import { CategoryFilterClientWrapper } from '@/components/blog/wrapper/CategoryFilterClientWrapper';
 import { SortClientWrapper } from '@/components/blog/wrapper/SortClientWrapper';
+import ScrambledText from '@/components/ScrambledText';
 
 interface BlogPageProps {
   searchParams: Promise<{ category?: string; sort?: string }>;
@@ -23,7 +24,15 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
   return (
     <div className="py-24 space-y-8 max-w-6xl mx-auto">
       <header className="bg-foreground p-12 rounded-lg space-y-2 text-center">
-        <h2 className="text-4xl font-bold text-background">Blog</h2>
+        <ScrambledText
+          className="text-background text-4xl font-bold"
+          radius={100}
+          duration={1.2}
+          speed={0.5}
+          scrambleChars={':.'}
+        >
+          Blog
+        </ScrambledText>
         <span className="text-muted-foreground">My thoughts and experiences</span>
       </header>
 

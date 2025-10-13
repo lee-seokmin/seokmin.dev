@@ -1,6 +1,7 @@
-import { getAllProjects, getProjectCategories } from "@/lib/projects"
-import ProjectCard from "@/components/craft/ProjectCard"
-import { CategoryFilterClientWrapper } from "@/components/craft/wrapper/CategoryFilterClientWrapper"
+import { getAllProjects, getProjectCategories } from "@/lib/projects";
+import ProjectCard from "@/components/craft/ProjectCard";
+import { CategoryFilterClientWrapper } from "@/components/craft/wrapper/CategoryFilterClientWrapper";
+import ScrambledText from "@/components/ScrambledText";
 
 interface CraftPageProps {
   searchParams: Promise<{ category?: string }>;
@@ -20,7 +21,15 @@ export default async function CraftPage({ searchParams }: CraftPageProps) {
   return (
     <div className="py-24 space-y-8 max-w-6xl mx-auto">
       <header className="bg-foreground p-12 rounded-lg space-y-2 text-center">
-        <h2 className="text-4xl font-bold text-background">Craft</h2>
+        <ScrambledText
+          className="text-background text-4xl font-bold"
+          radius={100}
+          duration={1.2}
+          speed={0.5}
+          scrambleChars={':.'}
+        >
+          Craft
+        </ScrambledText>
         <span className="text-muted-foreground">My projects and experiences</span>
       </header>
 
