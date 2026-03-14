@@ -10,7 +10,7 @@ const postsDirectory = path.join(process.cwd(), 'data', 'blog');
 
 export async function getAllCategories(): Promise<string[]> {
   const categories = fs.readdirSync(postsDirectory);
-  return categories.filter((category) => {
+  return categories.filter((category) => category !== "travel").filter((category) => {
     const categoryPath = path.join(postsDirectory, category);
     return fs.statSync(categoryPath).isDirectory();
   });
@@ -41,6 +41,9 @@ export async function getAllPosts(sortBy?: string): Promise<Post[]> {
   const allPosts: Post[] = [];
 
   categories.forEach((category) => {
+    // Skip travel category
+    if (category === "travel") return;
+    
     const categoryPath = path.join(postsDirectory, category);
 
     // Skip if not a directory
