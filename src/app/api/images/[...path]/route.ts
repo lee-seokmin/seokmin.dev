@@ -1,9 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 // Maximum file size to serve (50MB to leave some buffer)
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
+
+// Cache duration: 1 year for static images (immutable)
+const CACHE_MAX_AGE = 31536000; // 1 year in seconds
+const STALE_WHILE_REVALIDATE = 86400; // 1 day in seconds
+
+function generateETag(fileBuffer: Buffer | string): string {
+  const hash = crypto.createHash('md5');
+  hash.update(typeof fileBuffer === 'string' ? fileBuffer : fileBuffer);
+  return `"${hash.digest('hex')}"`;
+}
 
 function findImageFile(imagePath: string): string | null {
   const blogDir = path.join(process.cwd(), 'data', 'blog');
@@ -94,9 +105,6 @@ export async function GET(
     const imagePath = pathSegments.join('/');
     const fullPath = findImageFile(imagePath);
 
-    console.log('Requested:', imagePath);
-    console.log('Resolved to:', fullPath);
-
     if (!fullPath) {
       return new NextResponse('Not Found', { status: 404 });
     }
@@ -116,14 +124,40 @@ export async function GET(
 
     const ext = path.extname(fullPath);
     const contentType = getContentType(ext);
+    const lastModified = stats.mtime.toUTCString();
+    
+    // Read file for ETag generation
+    const fileBuffer = fs.readFileSync(fullPath);
+    const etag = generateETag(fileBuffer);
 
-    // For smaller files, read into memory as before
-    if (stats.size < 1024 * 1024) { // 1MB threshold for memory reading
-      const fileBuffer = fs.readFileSync(fullPath);
+    // Check conditional headers
+    const ifNoneMatch = request.headers.get('if-none-match');
+    const ifModifiedSince = request.headers.get('if-modified-since');
+
+    // Return 304 Not Modified if the file hasn't changed
+    if (ifNoneMatch === etag || (ifModifiedSince && new Date(ifModifiedSince) >= stats.mtime)) {
+      return new NextResponse(null, {
+        status: 304,
+        headers: {
+          'ETag': etag,
+          'Last-Modified': lastModified,
+          'Cache-Control': `public, max-age=${CACHE_MAX_AGE}, immutable, s-maxage=${CACHE_MAX_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`,
+          'Vary': 'Accept-Encoding',
+        },
+      });
+    }
+
+    // For smaller files, read into memory
+    if (stats.size < 1024 * 1024) { // 1MB threshold
       return new NextResponse(fileBuffer, {
         headers: {
           'Content-Type': contentType,
-          'Cache-Control': 'public, max-age=31536000, immutable',
+          'Content-Length': stats.size.toString(),
+          'ETag': etag,
+          'Last-Modified': lastModified,
+          'Cache-Control': `public, max-age=${CACHE_MAX_AGE}, immutable, s-maxage=${CACHE_MAX_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`,
+          'Vary': 'Accept-Encoding',
+          'X-Content-Type-Options': 'nosniff',
         },
       });
     }
@@ -134,8 +168,12 @@ export async function GET(
     return new NextResponse(fileStream as any, {
       headers: {
         'Content-Type': contentType,
-        'Cache-Control': 'public, max-age=31536000, immutable',
         'Content-Length': stats.size.toString(),
+        'ETag': etag,
+        'Last-Modified': lastModified,
+        'Cache-Control': `public, max-age=${CACHE_MAX_AGE}, immutable, s-maxage=${CACHE_MAX_AGE}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`,
+        'Vary': 'Accept-Encoding',
+        'X-Content-Type-Options': 'nosniff',
       },
     });
   } catch (error) {

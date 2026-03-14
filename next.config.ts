@@ -53,6 +53,28 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/api/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable, s-maxage=31536000, stale-while-revalidate=86400',
+          },
+          {
+            key: 'Vary',
+            value: 'Accept-Encoding',
+          },
+        ],
+      },
+      {
+        source: '/_next/image(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
     ];
   },
 

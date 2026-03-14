@@ -1,6 +1,6 @@
 import { getPostBySlug, getAllPosts } from '@/lib/posts';
 import { notFound } from 'next/navigation';
-import MDXContent from '@/components/blog/MDXContent';
+import BlogContentWrapper from '@/components/blog/BlogContentWrapper';
 import { Badge } from '@/components/ui/badge';
 import RelatedPosts from '@/components/blog/RelatedPosts';
 import Comment from '@/components/blog/Comment';
@@ -113,7 +113,11 @@ export default async function PostPage({ params }: PageProps) {
         </header>
 
         {/* Content */}
-        <MDXContent mdxSource={post.mdxSource} />
+        <BlogContentWrapper 
+          mdxSource={post.mdxSource} 
+          content={post.content}
+          thumbnail={post.thumbnail}
+        />
 
         {/* Tags */}
         {post.tags && (
